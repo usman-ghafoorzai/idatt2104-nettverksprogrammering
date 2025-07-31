@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Runner</title>
+</head>
+<body>
+<h2>Run Code</h2>
+<label for="codeInput">Enter your code:</label><br>
+<textarea id="codeInput" rows="10" cols="50" oninput="validateInput()"></textarea><br>
+<button id="runButton" onclick="sendCode()" disabled>Run Code</button>
+<h3>Result:</h3>
+<pre id="output"></pre>
+
+<script>
+    function validateInput() {
+        const code = document.getElementById("codeInput").value;
+        document.getElementById("runButton").disabled = code.trim() === "";
+    }
+
+    function sendCode() {
+        const code = document.getElementById("codeInput").value.trim();
+        if (code === "") {
+            document.getElementById("output").textContent = 'Error: Code cannot be empty';
+            return;
+        }
+
+        // Send POST request to the backend
+        fetch("http://localhost:8080/api/run", {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            body: JSON.stringify({ code: code })
+        })
+            .then(response => response.text())
+            .then(output => document.getElementById("output").textContent = output)
+            .catch(error => document.getElementById("output").textContent = 'Error: ' + error.message);
+    }
+</script>
+</body>
+</html>
